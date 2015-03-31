@@ -744,12 +744,30 @@ class Html extends PHPExcel_Reader_HTML {
         $height = (float) $attributes->getAttribute('height');
         $alt = $attributes->getAttribute('alt');
 
-        // init drawing
-        $drawing = new PHPExcel_Worksheet_Drawing();
+        // Detect if the image is a URL or a base64-encoded PNG
+        if (strpos($src, 'data:image/png;base64') !== false)
+        {
+            // Base64 encoded PNG
+            // Remove data:image/png;base64
+            $src = str_replace('data:image/png;base64', '', $src);
 
-        // Set image
-        $drawing->setPath($src);
-        $drawing->setName($alt);
+            // Load image into memory
+            $image = imagecreatefromstring(base64_decode($src));
+            imagesavealpha($image, true);
+            $drawing = new PHPExcel_Worksheet_MemoryDrawing();
+            $drawing->setName($alt);
+            $drawing->setImageResource($image);
+            $drawing->setRenderingFunction(PHPExcel_Worksheet_MemoryDrawing::RENDERING_PNG);
+            $drawing->setMimeType(PHPExcel_Worksheet_MemoryDrawing::MIMETYPE_DEFAULT);
+        } else {
+            // init drawing
+            $drawing = new PHPExcel_Worksheet_Drawing();
+
+            // Set image
+            $drawing->setPath($src);
+            $drawing->setName($alt);
+        }
+
         $drawing->setWorksheet($sheet);
         $drawing->setCoordinates($column . $row);
         $drawing->setResizeProportional();
