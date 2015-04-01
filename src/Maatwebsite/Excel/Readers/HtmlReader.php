@@ -17,6 +17,7 @@ use PHPExcel_Style_Alignment;
 use Illuminate\Support\Facades\Config;
 use Maatwebsite\Excel\Parsers\CssParser;
 use Maatwebsite\Excel\Classes\LaravelExcelWorksheet;
+use PHPExcel_Worksheet_MemoryDrawing;
 
 /**
  *
